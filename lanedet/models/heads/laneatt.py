@@ -50,7 +50,7 @@ class LaneATT(nn.Module):
 
         # Filter masks if `anchors_freq_path` is provided
         if anchors_freq_path is not None:
-            anchors_mask = torch.load(anchors_freq_path).cpu()
+            anchors_mask = torch.load(anchors_freq_path, weights_only=True).cpu()
             assert topk_anchors is not None
             ind = torch.argsort(anchors_mask, descending=True)[:topk_anchors]
             self.anchors = self.anchors[ind]
@@ -403,7 +403,7 @@ class LaneATT(nn.Module):
             # if the proposal does not start at the bottom of the image,
             # extend its proposal until the x is outside the image
             mask = ~((((lane_xs[:start] >= 0.) &
-                       (lane_xs[:start] <= 1.)).cpu().numpy()[::-1].cumprod()[::-1]).astype(np.bool))
+                       (lane_xs[:start] <= 1.)).cpu().numpy()[::-1].cumprod()[::-1]).astype(bool))
             lane_xs[end + 1:] = -2
             lane_xs[:start][mask] = -2
             lane_ys = self.anchor_ys[lane_xs >= 0]

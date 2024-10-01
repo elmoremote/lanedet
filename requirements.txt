@@ -1,11 +1,8 @@
-torch==1.8.0
-torchvision==0.9.0
-pandas
+torch
+torchvision
 addict
-sklearn
 opencv-python
 pytorch_warmup
-scikit-image
 tqdm
 p_tqdm
 imgaug>=0.4.0
