@@ -121,6 +121,7 @@ def calculate_rotation_angle(lines, image_width, threshold=10):
 
 def process_frame(sample):
     # Convert GStreamer buffer to numpy array
+    start = time.time()
     buffer = sample.get_buffer()
     caps = sample.get_caps()
     structure = caps.get_structure(0)
@@ -133,15 +134,14 @@ def process_frame(sample):
     )
 
     data = detect.preprocess(array)
-    start = time.time()
     data['lanes'] = detect.inference(data)[0]
-    end = time.time()
     lanes = [lane.to_array(cfg) for lane in data['lanes']]
+    end = time.time()
     try:
         angle, lanes = calculate_rotation_angle(lanes, cfg.ori_img_w)
         print(f"angle: {angle}, time: {end - start}")
     except:
-        print("proc err")
+        print(f"no angle, time: {end - start}")
 
 def on_frame(appsink):
     sample = appsink.emit('pull-sample')
