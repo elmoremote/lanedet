@@ -151,7 +151,7 @@ def on_frame(appsink):
 # Create the GStreamer pipeline
 pipeline = Gst.parse_launch(
     # 'filesrc location=/home/filipp/Downloads/center2.mkv ! decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
-    'v4l2src device=/dev/video0 ! decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
+    'v4l2src device=/dev/video66 ! decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
 )
 
 # Get the appsink element
