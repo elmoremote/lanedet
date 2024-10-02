@@ -33,6 +33,7 @@ class Detect(object):
         load_network(self.net, self.cfg.load_from)
 
     def preprocess(self, ori_img):
+        ori_img = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
         img = ori_img[self.cfg.cut_height:, :, :].astype(np.float32)
         data = {'img': img, 'lanes': []}
         data = self.processes(data)
