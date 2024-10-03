@@ -19,8 +19,11 @@ Gst.init(None)
 # Lanedet config
 cfg = Config.fromfile("configs/laneatt/resnet18_culane.py")
 cfg.load_from = "checkpoints/laneatt_r18_culane.pth"
-cfg.ori_img_w = 1280
-cfg.ori_img_h = 510
+cfg.ori_img_w = 1920
+cfg.ori_img_h = 1080
+
+totalTime = 0
+frameCount = 0
 
 class Detect(object):
     def __init__(self, cfg):
@@ -33,8 +36,9 @@ class Detect(object):
         load_network(self.net, self.cfg.load_from)
 
     def preprocess(self, ori_img):
-        ori_img = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
-        img = ori_img[self.cfg.cut_height:, :, :].astype(np.float32)
+        # ori_img = cv2.cvtColor(ori_img, cv2.COLOR_BGR2RGB)
+        img = ori_img
+        #img = (ori_img[self.cfg.cut_height:, :, :]).astype(np.float32))
         data = {'img': img, 'lanes': []}
         data = self.processes(data)
         data['img'] = data['img'].unsqueeze(0)
@@ -120,7 +124,9 @@ def calculate_rotation_angle(lines, image_width, threshold=10):
 
     return angle, [line1, line2, middle_line]
 
+
 def process_frame(sample):
+    global totalTime, frameCount
     # Convert GStreamer buffer to numpy array
     start = time.time()
     buffer = sample.get_buffer()
@@ -138,11 +144,15 @@ def process_frame(sample):
     data['lanes'] = detect.inference(data)[0]
     lanes = [lane.to_array(cfg) for lane in data['lanes']]
     end = time.time()
+    t = end - start
+    totalTime += t
+    frameCount += 1
+
     try:
         angle, lanes = calculate_rotation_angle(lanes, cfg.ori_img_w)
-        print(f"angle: {angle}, time: {end - start}")
+        print(f"angle: {angle}, time: {t}, avg: {totalTime / frameCount}")
     except:
-        print(f"no angle, time: {end - start}")
+        print(f"no angle, time: {t}, avg: {totalTime / frameCount}")
 
 def on_frame(appsink):
     sample = appsink.emit('pull-sample')
