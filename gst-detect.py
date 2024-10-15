@@ -19,8 +19,8 @@ Gst.init(None)
 # Lanedet config
 cfg = Config.fromfile("configs/laneatt/resnet18_culane.py")
 cfg.load_from = "checkpoints/laneatt_r18_culane.pth"
-cfg.ori_img_w = 1920
-cfg.ori_img_h = 1080
+cfg.ori_img_w = 640
+cfg.ori_img_h = 360
 
 totalTime = 0
 frameCount = 0
@@ -161,7 +161,8 @@ def on_frame(appsink):
 
 # Create the GStreamer pipeline
 pipeline = Gst.parse_launch(
-    # 'filesrc location=/home/filipp/Downloads/center2.mkv ! decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
+    #'filesrc location=center2_12_14.mkv ! matroskademux ! vp8dec ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
+    #'filesrc location=/home/elmo-dev/video1.raw ! queue ! video/x-raw,width=1280,height=720,framerate=30/1,format=I420 ! rawvideoparse use-sink-caps=true ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
     'v4l2src device=/dev/video66 ! decodebin ! videoconvert ! video/x-raw,format=RGB ! appsink name=sink'
 )
 
