@@ -19,8 +19,8 @@ Gst.init(None)
 # Lanedet config
 cfg = Config.fromfile("configs/laneatt/resnet18_culane.py")
 cfg.load_from = "checkpoints/laneatt_r18_culane.pth"
-cfg.ori_img_w = 640
-cfg.ori_img_h = 360
+cfg.ori_img_w = 1280
+cfg.ori_img_h = 450
 
 totalTime = 0
 frameCount = 0
@@ -139,6 +139,7 @@ def process_frame(sample):
         buffer=buffer.extract_dup(0, buffer.get_size()),
         dtype=np.uint8
     )
+    array = array[0:450,0:1280]
 
     data = detect.preprocess(array)
     data['lanes'] = detect.inference(data)[0]
