@@ -2,6 +2,8 @@
 ## Introduction
 LaneDet is an open source lane detection toolbox based on PyTorch that aims to pull together a wide variety of state-of-the-art lane detection models. Developers can reproduce these SOTA methods and build their own methods.
 
+Packages for jetson: https://forums.developer.nvidia.com/t/pytorch-for-jetson/72048
+
 ![demo image](.github/_clips_0601_1494452613491980502_20.jpg)
 
 ## Table of Contents
