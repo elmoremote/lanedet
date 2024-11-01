@@ -155,12 +155,17 @@ def process_frame(sample):
 
     try:
         angle, lanes = calculate_rotation_angle(lanes, cfg.ori_img_w)
-        car_angle = canctrl.get_car_angle()
-        send_angle = car_angle + pidctrl.compute(angle, car_angle)
-        print(f"angle: {angle}, out: {send_angle} time: {t}, avg: {totalTime / frameCount}")
-    except:
+    except Exception as ex:
+        #print(ex)
+        #canctrl.send_angle_2_car(0)
         car_angle = canctrl.get_car_angle()
         print(f"no angle, car angle: {car_angle} time: {t}, avg: {totalTime / frameCount}")
+
+    car_angle = canctrl.get_car_angle()
+    send_angle = car_angle + pidctrl.compute(angle, car_angle)
+    canctrl.send_angle_2_car(-send_angle * 5)
+    print(f"angle: {angle}, out: {send_angle} time: {t}, avg: {totalTime / frameCount}")
+
 
 def on_frame(appsink):
     sample = appsink.emit('pull-sample')
