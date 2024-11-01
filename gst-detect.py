@@ -4,6 +4,8 @@ import gi
 import torch
 import numpy as np
 import time
+import cancontrol
+import pid
 
 from lanedet.datasets.process import Process
 from lanedet.models.registry import build_net
@@ -53,7 +55,9 @@ class Detect(object):
 
 
 detect = Detect(cfg)
-
+pidctrl = pid.PIDController(Kp=0.5, Ki=0.1, Kd=0.05, dt=0.1)
+canctrl = cancontrol.CanControl()
+canctrl.run()
 
 def filter_noise_from_line(line, threshold=10):
     x = line[:, 0]
@@ -151,9 +155,12 @@ def process_frame(sample):
 
     try:
         angle, lanes = calculate_rotation_angle(lanes, cfg.ori_img_w)
-        print(f"angle: {angle}, time: {t}, avg: {totalTime / frameCount}")
+        car_angle = canctrl.get_car_angle()
+        send_angle = car_angle + pidctrl.compute(angle, car_angle)
+        print(f"angle: {angle}, out: {send_angle} time: {t}, avg: {totalTime / frameCount}")
     except:
-        print(f"no angle, time: {t}, avg: {totalTime / frameCount}")
+        car_angle = canctrl.get_car_angle()
+        print(f"no angle, car angle: {car_angle} time: {t}, avg: {totalTime / frameCount}")
 
 def on_frame(appsink):
     sample = appsink.emit('pull-sample')
